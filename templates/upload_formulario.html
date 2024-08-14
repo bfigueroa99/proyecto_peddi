@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carga Masiva de Formularios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            padding: 10px;
+            background-color: lightgray;
+            width: 100%;
+            height: 100vh;
+        }
+        #drop-area {
+            width: 100%;
+            height: 150px;
+            border: 2px dashed black;
+            text-align: center;
+            padding: 20px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        #file-info {
+            display: none;
+            background-color: #eee;
+            padding: 10px;
+            border: 1px solid black;
+            margin-top: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: gray;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkgray;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="drop-area">
+            <p>Arrastra y suelta un archivo JSON aquí</p>
+            <input id="file-upload" type="file" accept="application/JSON" name="JSONfile" style="display:none;">
+        </div>
+        <div id="file-info">
+            <p id="file-name"></p>
+            <p id="file-type"></p>
+            <p id="file-size"></p>
+        </div>
+        <button id="btn-submit">Subir Archivo</button>
+    </div>
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileUpload = document.getElementById('file-upload');
+        const fileInfo = document.getElementById('file-info');
+        const fileName = document.getElementById('file-name');
+        const fileType = document.getElementById('file-type');
+        const fileSize = document.getElementById('file-size');
+        const submitButton = document.getElementById('btn-submit');
+        let selectedFile = null;
+
+        dropArea.addEventListener('click', () => {
+            fileUpload.click();
+        });
+
+        fileUpload.addEventListener('change', (event) => {
+            handleFileSelect(event.target.files[0]);
+        });
+
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.style.borderColor = 'black';
+        });
+
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            handleFileSelect(event.dataTransfer.files[0]);
+        });
+
+        function handleFileSelect(file) {
+            selectedFile = file;
+            fileInfo.style.display = 'block';
+            fileName.textContent = "Nombre: " + file.name;
+            fileType.textContent = "Tipo: " + file.type;
+            fileSize.textContent = "Tamaño: " + file.size + " bytes";
+        }
+
+        submitButton.addEventListener('click', () => {
+            if (!selectedFile) {
+                alert("Por favor, seleccione un archivo.");
+                return;
+            }
+            alert("Subiendo archivo: " + selectedFile.name);
+        });
+    </script>
+</body>
+</html>

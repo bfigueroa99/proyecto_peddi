@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrar Multipropietarios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 10px;
+        }
+        .container {
+            width: 100%;
+            padding: 10px;
+            background-color: lightgray;
+            border: 1px solid black;
+        }
+        h1 {
+            color: black;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        h2 {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .form-group {
+            margin-bottom: 10px;
+            flex: 1;
+            padding: 5px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 5px;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        #resultContainer {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Filtrar Multipropietarios</h1>
+        <form id="filterForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="region">Región</label>
+                    <select id="region">
+                        <option value="">Seleccionar Región</option>
+                        {% for region in regiones %}
+                        <option value="{{ region.id }}">{{ region.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comuna">Comuna</label>
+                    <select id="comuna" disabled>
+                        <option value="">Seleccionar Comuna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="manzana">Manzana</label>
+                    <input type="number" id="manzana" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="predio">Predio</label>
+                    <input type="number" id="predio" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="ano">Año</label>
+                    <input type="number" id="ano" min="1900" max="2100">
+                </div>
+            </div>
+            <button type="button" onclick="buscarMultipropietarios()">Buscar</button>
+        </form>
+        <br>
+        <div id="alertContainer"></div>
+        <br>
+        <div id="resultContainer" style="display: none;">
+            <h2>Resultados</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Comuna</th>
+                        <th>Manzana</th>
+                        <th>Predio</th>
+                        <th>Fecha Inscripción</th>
+                        <th>Año</th>
+                        <th>Nº Inscripción</th>
+                        <th>Fojas</th>
+                        <th>RUT</th>
+                        <th>%Derechos</th>
+                        <th>Año Vigencia Inicial</th>
+                        <th>Año Vigencia Final</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function buscarMultipropietarios() {
+            var regionId = document.getElementById('region').value;
+            var comunaId = document.getElementById('comuna').value;
+            var manzana = document.getElementById('manzana').value;
+            var predio = document.getElementById('predio').value;
+            var ano = document.getElementById('ano').value;
+
+            fetch('/buscar_multipropietarios?region_id=' + regionId + '&comuna_id=' + comunaId + '&manzana=' + manzana + '&predio=' + predio + '&ano=' + ano)
+                .then(response => response.json())
+                .then(data => {
+                    mostrarResultados(data);
+                    mostrarAlertaExitosa();
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                });
+        }
+
+        function mostrarAlertaExitosa() {
+            var fechaHora = new Date().toLocaleString();
+            var mensaje = 'Se ha realizado exitosamente la búsqueda en el momento: ' + fechaHora;
+            var alertHTML = '<div>' + mensaje + '</div>';
+            document.getElementById('alertContainer').innerHTML = alertHTML;
+        }
+
+        function mostrarResultados(multipropietarios) {
+            var resultBody = document.getElementById('resultBody');
+            resultBody.innerHTML = '';
+            if (multipropietarios.length === 0) {
+                resultBody.innerHTML = '<tr><td colspan="11">No hay resultados para mostrar</td></tr>';
+            } else {
+                multipropietarios.forEach(function(multipropietario) {
+                    var row = '<tr>';
+                    row += '<td>' + multipropietario.comuna_id + '</td>';
+                    row += '<td>' + multipropietario.manzana + '</td>';
+                    row += '<td>' + multipropietario.predio + '</td>';
+                    row += '<td>' + (multipropietario.fecha_ins ? multipropietario.fecha_ins : '') + '</td>';
+                    row += '<td>' + (multipropietario.ano_ins ? multipropietario.ano_ins : '') + '</td>';
+                    row += '<td>' + (multipropietario.num_ins ? multipropietario.num_ins : '') + '</td>';
+                    row += '<td>' + (multipropietario.fojas ? multipropietario.fojas : '') + '</td>';
+                    row += '<td>' + multipropietario.rut + '</td>';
+                    row += '<td>' + multipropietario.porcentaje_der + '</td>';
+                    row += '<td>' + multipropietario.ano_vigencia_inicial + '</td>';
+                    row += '<td>' + (multipropietario.ano_vigencia_final ? multipropietario.ano_vigencia_final : '') + '</td>';
+                    row += '</tr>';
+                    resultBody.innerHTML += row;
+                });
+            }
+            document.getElementById('resultContainer').style.display = 'block';
+        }
+
+        document.getElementById('region').addEventListener('change', function() {
+            var regionId = this.value;
+
+            if (regionId) {
+                fetch('/comunas/' + regionId)
+                    .then(response => response.json())
+                    .then(data => {
+                        var comunaSelect = document.getElementById('comuna');
+                        comunaSelect.innerHTML = '';
+                        data.forEach(function(comuna) {
+                            comunaSelect.innerHTML += '<option value="' + comuna.id + '">' + comuna.nombre + '</option>';
+                        });
+                        comunaSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener las comunas:', error);
+                    });
+            } else {
+                document.getElementById('comuna').innerHTML = '';
+                document.getElementById('comuna').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mostrar Formularios</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 20px;
+        }
+        .formularios-container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            background-color: lightgray;
+            border: 1px solid black;
+        }
+        h1 {
+            text-align: left;
+            color: black;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        a {
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="formularios-container">
+        <h1>Formularios</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nº de Atención</th>
+                    <th>CNE</th>
+                    <th>Comuna</th>
+                    <th>Manzana-Predio</th>
+                    <th>Fojas</th>
+                    <th>Fecha de Inscripción</th>
+                    <th>Nº de Inscripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formulario in formularios %}
+                <tr>
+                    <td>{{ formulario.num_atencion }}</td>
+                    <td>{{ formulario.cne }}</td>
+                    <td>{{ formulario.comuna.nombre }}</td>
+                    <td>{{ formulario.manzana }}-{{ formulario.predio }}</td>
+                    <td>{{ formulario.fojas }}</td>
+                    <td>{{ formulario.fecha_ins }}</td>
+                    <td>{{ formulario.num_ins }}</td>
+                    <td><a href="{{ url_for('mostrar_formulario', num_atencion=formulario.num_atencion) }}">Ver</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

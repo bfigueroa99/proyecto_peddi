@@ -1,0 +1,7 @@
+Flask
+SQLAlchemy
+mysqlclient
+flask-sqlalchemy
+pytest
+pytest-cov
+pylint
