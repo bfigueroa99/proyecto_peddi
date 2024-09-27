@@ -4,76 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles del Formulario</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            padding: 10px;
+            padding-top: 50px;
+            background-color: #f8f9fa;
         }
         .container {
-            width: 100%;
-            padding: 10px;
-            background-color: lightgray;
-            border: 1px solid black;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            background-color: #fff;
+            padding: 30px;
         }
         h1, h2 {
-            color: black;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
         hr {
-            border: 1px solid black;
-            margin-top: 5px;
-            margin-bottom: 10px;
+            border: none;
+            height: 2.2px; 
+            background-color: #d1cfcf6a; 
+            margin-top: 10px; 
+            margin-bottom: 20px; 
         }
         .formulario-ul {
-            list-style-type: disc;
-            margin-left: 20px;
+            list-style-type: none;
+            padding-left: 0;
         }
         .formulario-ul li {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
+    {% include '_navbar.html' %}
     <div class="container">
         <h1>Detalles del Formulario</h1>
         <hr>
-        <div>
-            <p><strong>Número de Atención:</strong> {{ formulario.num_atencion }}</p>
-            <p><strong>CNE:</strong>
-                {% if formulario.cne == 8 %}
-                    Compraventa ({{ formulario.cne }})
-                {% elif formulario.cne == 99 %}
-                    Regularización de Patrimonio ({{ formulario.cne }})
-                {% else %}
-                    {{ formulario.cne }}
-                {% endif %}
-            </p>
-            <p><strong>Región:</strong> {{ formulario.comuna.region.nombre }}</p>
-            <p><strong>Comuna:</strong> {{ formulario.comuna.nombre }}</p>
-            <p><strong>Manzana:</strong> {{ formulario.manzana }}</p>
-            <p><strong>Predio:</strong> {{ formulario.predio }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Número de Atención:</strong> {{ formulario.num_atencion }}</p>
+                <p><strong>CNE:</strong>
+                    {% if formulario.cne == 8 %}
+                        Compraventa ({{ formulario.cne }})
+                    {% elif formulario.cne == 99 %}
+                        Regularización de Patrimonio ({{ formulario.cne }})
+                    {% else %}
+                        {{ formulario.cne }}
+                    {% endif %}
+                </p>
+                <p><strong>Región:</strong> {{ formulario.comuna.region.nombre }}</p>
+                <p><strong>Comuna:</strong> {{ formulario.comuna.nombre }}</p>
+                <p><strong>Manzana:</strong> {{ formulario.manzana }}</p>
+                <p><strong>Predio:</strong> {{ formulario.predio }}</p>
+            </div>
+            <div class="col-md-6">
+                <h2>Enajenantes:</h2>
+                <ul class="formulario-ul">
+                    {% for persona in formulario.persona_formulario %}
+                        {% if persona.rol == 'enajenante' %}
+                            <li>RUT: {{ persona.rut }} - Porcentaje de Derecho: {{ persona.porcentaje_der }}%</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <h2>Adquirentes:</h2>
+                <ul class="formulario-ul">
+                    {% for persona in formulario.persona_formulario %}
+                        {% if persona.rol == 'adquirente' %}
+                            <li>RUT: {{ persona.rut }} - Porcentaje de Derecho: {{ persona.porcentaje_der }}%</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-        <h2>Enajenantes:</h2>
-        <ul class="formulario-ul">
-            {% for persona in formulario.persona_formulario %}
-                {% if persona.rol == 'enajenante' %}
-                    <p>RUT: {{ persona.rut }} - Porcentaje de Derecho: {{ persona.porcentaje_der }}%</p>
-                {% endif %}
-            {% endfor %}
-        </ul>
-        <h2>Adquirentes:</h2>
-        <ul class="formulario-ul">
-            {% for persona in formulario.persona_formulario %}
-                {% if persona.rol == 'adquirente' %}
-                    <p>RUT: {{ persona.rut }} - Porcentaje de Derecho: {{ persona.porcentaje_der }}%</p>
-                {% endif %}
-            {% endfor %}
-        </ul>
-        <div>
-            <p><strong>Fojas:</strong> {{ formulario.fojas }}</p>
-            <p><strong>Fecha de Inscripción:</strong> {{ formulario.fecha_ins }}</p>
-            <p><strong>Número de Inscripción:</strong> {{ formulario.num_ins }}</p>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Fojas:</strong> {{ formulario.fojas }}</p>
+                <p><strong>Fecha de Inscripción:</strong> {{ formulario.fecha_ins }}</p>
+                <p><strong>Número de Inscripción:</strong> {{ formulario.num_ins }}</p>
+            </div>
         </div>
     </div>
 </body>

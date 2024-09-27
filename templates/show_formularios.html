@@ -4,71 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mostrar Formularios</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            padding: 20px;
+            padding-top: 50px;
+            background-color: #f8f9fa;
         }
         .formularios-container {
-            width: 100%;
+            margin-top: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            background-color: #fff;
+            padding: 30px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 10px;
-            background-color: lightgray;
-            border: 1px solid black;
         }
         h1 {
-            text-align: left;
-            color: black;
-            margin-bottom: 10px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
+            text-align: center;
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
+            text-align: center;
+            vertical-align: middle;
         }
-        a {
-            color: blue;
-            text-decoration: underline;
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .btn-ver {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 50%;
+            padding: 10px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer; /* Solo el botón tiene el cursor de puntero */
+        }
+        .btn-ver i {
+            font-size: 16px;
+        }
+        .btn-ver:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: scale(1.1);
+        }
+        .btn-ver:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+        table tbody tr:hover {
+            background-color: #f1f1f1;
+            transition: background-color 0.3s ease;
         }
     </style>
 </head>
 <body>
+    {% include '_navbar.html' %}
     <div class="formularios-container">
         <h1>Formularios</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nº de Atención</th>
-                    <th>CNE</th>
-                    <th>Comuna</th>
-                    <th>Manzana-Predio</th>
-                    <th>Fojas</th>
-                    <th>Fecha de Inscripción</th>
-                    <th>Nº de Inscripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for formulario in formularios %}
-                <tr>
-                    <td>{{ formulario.num_atencion }}</td>
-                    <td>{{ formulario.cne }}</td>
-                    <td>{{ formulario.comuna.nombre }}</td>
-                    <td>{{ formulario.manzana }}-{{ formulario.predio }}</td>
-                    <td>{{ formulario.fojas }}</td>
-                    <td>{{ formulario.fecha_ins }}</td>
-                    <td>{{ formulario.num_ins }}</td>
-                    <td><a href="{{ url_for('mostrar_formulario', num_atencion=formulario.num_atencion) }}">Ver</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nº de Atención</th>
+                        <th>CNE</th>
+                        <th>Comuna</th>
+                        <th>Manzana-Predio</th>
+                        <th>Fojas</th>
+                        <th>Fecha de Inscripción</th>
+                        <th>Nº de Inscripción</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for formulario in formularios %}
+                    <tr>
+                        <td>{{ formulario.num_atencion }}</td>
+                        <td>{{ formulario.cne }}</td>
+                        <td>{{ formulario.comuna.nombre }}</td>
+                        <td>{{ formulario.manzana }}-{{ formulario.predio }}</td>
+                        <td>{{ formulario.fojas }}</td>
+                        <td>{{ formulario.fecha_ins }}</td>
+                        <td>{{ formulario.num_ins }}</td>
+                        <td>
+                            <a href="{{ url_for('mostrar_formulario', num_atencion=formulario.num_atencion) }}" class="btn btn-ver btn-sm">
+                                <i class="fas fa-search"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 </html>

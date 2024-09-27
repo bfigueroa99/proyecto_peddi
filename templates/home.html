@@ -3,48 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina de Formularios</title>
+    <title>Página de Formularios - EnajenApp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: black;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
         }
-        .container {
-            width: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-        }
-        a {
-            color: blue;
-            text-decoration: underline;
+        .content {
+            text-align: center;
+            padding-top: 50px;
+            margin-bottom: 100px;
         }
         h1 {
-            text-align: left;
-            color: red;
+            font-size: 4em;
+            color: #343a40;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            font-size: 1.1em;
+            color: #6c757d;
+            margin-bottom: 40px;
+        }
+        .row {
+            justify-content: center;
+        }
+        /* Estilo para las tarjetas con forma de casa */
+        .card {
+            position: relative;
+            margin: 20px;
+            border: none;
+            border-radius: 0 0 15px 15px; /* Bordes redondeados solo abajo */
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease-in-out;
+            background-color: #f2d1b3; /* Color de casa */
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -60px; /* Ajusta la altura del triángulo */
+            left: 0;
+            right: 0;
+            border-left: 80px solid transparent; /* Hacer el triángulo más puntiagudo */
+            border-right: 80px solid transparent;
+            border-bottom: 60px solid #b5651d; /* Color del techo */
+            border-radius: 0 0 10px 10px; /* Suavizar la parte inferior del techo */
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        .card-body {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 0 0 15px 15px;
+            padding: 20px;
+        }
+        .card-title {
+            font-size: 1.6em;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #212529;
+        }
+        .card-text {
+            font-size: 1.1em;
+            color: #6c757d;
+        }
+        .btn {
+            border-radius: 30px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .btn-success, .btn-info, .btn-secondary, .btn-warning {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+        .btn-success:hover, .btn-info:hover, .btn-secondary:hover, .btn-warning:hover {
+            background-color: #343a40;
+            color: #fff;
+        }
+        .btn-success::before {
+            content: '🏠'; /* Icono de casa */
+            margin-right: 10px;
+        }
+        .btn-info::before {
+            content: '🔍'; /* Icono de lupa */
+            margin-right: 10px;
+        }
+        .btn-secondary::before {
+            content: '📂'; /* Icono de filtro */
+            margin-right: 10px;
+        }
+        .btn-warning::before {
+            content: '📥'; /* Icono de archivo */
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Bienes Raíz-ES</h1>
-    <p>¡Bienvenido! Por favor, elige una de las opciones que se muestran a continuación.</p>
+    {% include '_navbar.html' %}
+
     <div class="container">
-        <ul>
-            <li><a href="/nuevo_formulario">Crear formulario</a> - Crea un nuevo formulario, o incluso múltiples mediante archivos JSON.</li>
-            <li><a href="/formularios">Ver formularios</a> - Visualiza todos los formularios creados mediante una grilla.</li>
-            <li><a href="/filtrar_multipropietarios">Filtrar propietarios</a> - Filtra los propietarios por rol y año.</li>
-            <li><a href="/cargar_archivo">Carga de Archivos</a> - Carga formularios de forma masiva subiéndolos en un archivo JSON.</li>
-        </ul>
+        <div class="content">
+            <h1>EnajenApp</h1>
+            <p>¡Bienvenido! Por favor, elige una de las opciones que se muestran a continuación.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Crear formulario</h5>
+                        <p class="card-text">Crea un nuevo formulario, o incluso múltiples mediante archivos JSON.</p>
+                        <a href="/nuevo_formulario" class="btn btn-success">Crear</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ver formularios</h5>
+                        <p class="card-text">Visualiza todos los formularios creados mediante una grilla.<br><br></p>
+                        <a href="/formularios" class="btn btn-info">Ver</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Filtrar propietarios</h5>
+                        <p class="card-text">Filtra los propietarios por rol y año.<br><br><br></p>
+                        <a href="/filtrar_multipropietarios" class="btn btn-secondary">Filtrar</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Carga de Archivos</h5>
+                        <p class="card-text">Carga formularios de forma masiva subiéndolos en un archivo JSON.</p>
+                        <a href="/cargar_archivo" class="btn btn-warning">Cargar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <br>
-    <hr>
-    <div>© 2024 Pagina de Formularios - Todos los derechos reservados</div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

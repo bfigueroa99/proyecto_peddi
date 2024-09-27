@@ -13,6 +13,7 @@ from flask import Flask, render_template, request, jsonify, flash
 from models import Base, Formulario, PersonaFormulario, Region
 from models import Comuna, Multipropietario
 from database import session, LLAVE
+from sqlalchemy import text
 
 ESTADO_ANTERIOR = "anterior"
 ESTADO_ACTUAL = "actual"
@@ -22,6 +23,389 @@ MAXIMO_PORCENTAJE = 100
 CNE_COMPRAVENTA = 8
 UNITARIO = 1
 HOME_PAGE = "home.html"
+
+# Función que rellena la tabla Región (en el caso que esté vacía).
+def rellenar_tabla_region():
+    regiones = session.query(Region).all()
+    if not regiones:
+        session.execute(text("""
+            INSERT INTO region (id, nombre) VALUES
+            (1, 'Región de Tarapacá'),
+            (2, 'Región de Antofagasta'),
+            (3, 'Región de Atacama'),
+            (4, 'Región de Coquimbo'),
+            (5, 'Región de Valparaíso'),
+            (6, 'Región del Libertador General Bernardo O''''Higgins'),
+            (7, 'Región del Maule'),
+            (8, 'Región del Biobío'),
+            (9, 'Región de la Araucanía'),
+            (10, 'Región de Los Lagos'),
+            (11, 'Región de Aysén del Gral.Carlos Ibáñez del C.'),
+            (12, 'Región de Magallanes y la Antártica Chilena'),
+            (13, 'Región Metropolitana de Santiago'),
+            (14, 'Región de Los Ríos'),
+            (15, 'Región de Arica y Parinacota'),
+            (16, 'Región de Ñuble')
+        """))
+        session.commit()
+
+
+# Función que rellena la tabla Comuna (en el caso que esté vacía).
+def rellenar_tabla_comuna():
+    comunas = session.query(Comuna).all()
+    if not comunas:
+        session.execute(text("""
+            INSERT INTO comuna (id, region_id, nombre) VALUES
+            (5, 1, 'IQUIQUE'),
+            (6, 1, 'HUARA'),
+            (7, 1, 'CAMIÑA'),
+            (8, 1, 'COLCHANE'),
+            (9, 1, 'PICA'),
+            (10, 1, 'POZO ALMONTE'),
+            (394, 1, 'ALTO HOSPICIO'),
+            (11, 2, 'TOCOPILLA'),
+            (12, 2, 'MARÍA ELENA'),
+            (13, 2, 'CALAMA'),
+            (14, 2, 'OLLAGÜE'),
+            (15, 2, 'SAN PEDRO DE ATACAMA'),
+            (16, 2, 'ANTOFAGASTA'),
+            (17, 2, 'MEJILLONES'),
+            (18, 2, 'SIERRA GORDA'),
+            (19, 2, 'TALTAL'),
+            (20, 3, 'CHAÑARAL'),
+            (21, 3, 'DIEGO DE ALMAGRO'),
+            (22, 3, 'COPIAPÓ'),
+            (23, 3, 'CALDERA'),
+            (24, 3, 'TIERRA AMARILLA'),
+            (25, 3, 'VALLENAR'),
+            (26, 3, 'FREIRINA'),
+            (27, 3, 'HUASCO'),
+            (28, 3, 'ALTO DEL CARMEN'),
+            (29, 4, 'LA SERENA'),
+            (30, 4, 'LA HIGUERA'),
+            (31, 4, 'COQUIMBO'),
+            (32, 4, 'ANDACOLLO'),
+            (33, 4, 'VICUÑA'),
+            (34, 4, 'PAIHUANO'),
+            (35, 4, 'OVALLE'),
+            (36, 4, 'RÍO HURTADO'),
+            (37, 4, 'MONTE PATRIA'),
+            (38, 4, 'COMBARBALÁ'),
+            (39, 4, 'PUNITAQUI'),
+            (40, 4, 'ILLAPEL'),
+            (41, 4, 'SALAMANCA'),
+            (42, 4, 'LOS VILOS'),
+            (43, 4, 'CANELA'),
+            (44, 5, 'LA LIGUA'),
+            (45, 5, 'PETORCA'),
+            (46, 5, 'CABILDO'),
+            (47, 5, 'ZAPALLAR'),
+            (48, 5, 'PAPUDO'),
+            (49, 5, 'LOS ANDES'),
+            (50, 5, 'SAN ESTEBAN'),
+            (51, 5, 'CALLE LARGA'),
+            (52, 5, 'RINCONADA'),
+            (53, 5, 'SAN FELIPE'),
+            (54, 5, 'PUTAENDO'),
+            (55, 5, 'SANTA MARÍA'),
+            (56, 5, 'PANQUEHUE'),
+            (57, 5, 'LLAILLAY'),
+            (58, 5, 'CATEMU'),
+            (59, 5, 'QUILLOTA'),
+            (60, 5, 'LA CRUZ'),
+            (61, 5, 'CALERA'),
+            (62, 5, 'NOGALES'),
+            (63, 5, 'HIJUELAS'),
+            (64, 5, 'LIMACHE'),
+            (65, 5, 'OLMUÉ'),
+            (66, 5, 'VALPARAÍSO'),
+            (67, 5, 'VIÑA DEL MAR'),
+            (68, 5, 'QUINTERO'),
+            (69, 5, 'PUCHUNCAVÍ'),
+            (70, 5, 'QUILPUÉ'),
+            (71, 5, 'VILLA ALEMANA'),
+            (72, 5, 'CASABLANCA'),
+            (73, 5, 'JUAN FERNÁNDEZ'),
+            (74, 5, 'SAN ANTONIO'),
+            (75, 5, 'CARTAGENA'),
+            (76, 5, 'EL TABO'),
+            (77, 5, 'EL QUISCO'),
+            (78, 5, 'ALGARROBO'),
+            (79, 5, 'SANTO DOMINGO'),
+            (80, 5, 'ISLA DE PASCUA'),
+            (377, 5, 'CONCÓN'),
+            (382, 5, 'LLAY LLAY'),
+            (132, 6, 'RANCAGUA'),
+            (133, 6, 'GRANEROS'),
+            (134, 6, 'MOSTAZAL'),
+            (135, 6, 'CODEGUA'),
+            (136, 6, 'MACHALÍ'),
+            (137, 6, 'OLIVAR'),
+            (138, 6, 'REQUÍNOA'),
+            (139, 6, 'RENGO'),
+            (140, 6, 'MALLOA'),
+            (141, 6, 'QUINTA DE TILCOCO'),
+            (142, 6, 'SAN VICENTE'),
+            (143, 6, 'PICHIDEGUA'),
+            (144, 6, 'PEUMO'),
+            (145, 6, 'COLTAUCO'),
+            (146, 6, 'COINCO'),
+            (147, 6, 'DOÑIHUE'),
+            (148, 6, 'LAS CABRAS'),
+            (149, 6, 'SAN FERNANDO'),
+            (150, 6, 'CHIMBARONGO'),
+            (151, 6, 'PLACILLA'),
+            (152, 6, 'NANCAGUA'),
+            (153, 6, 'CHÉPICA'),
+            (154, 6, 'SANTA CRUZ'),
+            (155, 6, 'LOLOL'),
+            (156, 6, 'PUMANQUE'),
+            (157, 6, 'PALMILLA'),
+            (158, 6, 'PERALILLO'),
+            (159, 6, 'PICHILEMU'),
+            (160, 6, 'NAVIDAD'),
+            (161, 6, 'LITUECHE'),
+            (162, 6, 'LA ESTRELLA'),
+            (163, 6, 'MARCHIHUE'),
+            (164, 6, 'PAREDONES'),
+            (165, 7, 'CURICÓ'),
+            (166, 7, 'TENO'),
+            (167, 7, 'ROMERAL'),
+            (168, 7, 'MOLINA'),
+            (169, 7, 'SAGRADA FAMILIA'),
+            (170, 7, 'HUALAÑÉ'),
+            (171, 7, 'LICANTÉN'),
+            (172, 7, 'VICHUQUÉN'),
+            (173, 7, 'RAUCO'),
+            (174, 7, 'TALCA'),
+            (175, 7, 'PELARCO'),
+            (176, 7, 'RÍO CLARO'),
+            (177, 7, 'SAN CLEMENTE'),
+            (178, 7, 'MAULE'),
+            (179, 7, 'EMPEDRADO'),
+            (180, 7, 'PENCAHUE'),
+            (181, 7, 'CONSTITUCIÓN'),
+            (182, 7, 'CUREPTO'),
+            (183, 7, 'LINARES'),
+            (184, 7, 'YERBAS BUENAS'),
+            (185, 7, 'COLBÚN'),
+            (186, 7, 'LONGAVÍ'),
+            (187, 7, 'PARRAL'),
+            (188, 7, 'RETIRO'),
+            (189, 7, 'VILLA ALEGRE'),
+            (190, 7, 'SAN JAVIER'),
+            (191, 7, 'CAUQUENES'),
+            (192, 7, 'PELLUHUE'),
+            (193, 7, 'CHANCO'),
+            (378, 7, 'SAN RAFAEL'),
+            (214, 8, 'LOS ANGELES'),
+            (215, 8, 'CABRERO'),
+            (216, 8, 'TUCAPEL'),
+            (217, 8, 'ANTUCO'),
+            (218, 8, 'QUILLECO'),
+            (219, 8, 'SANTA BÁRBARA'),
+            (220, 8, 'QUILACO'),
+            (221, 8, 'MULCHÉN'),
+            (222, 8, 'NEGRETE'),
+            (223, 8, 'NACIMIENTO'),
+            (224, 8, 'LAJA'),
+            (225, 8, 'SAN ROSENDO'),
+            (226, 8, 'YUMBEL'),
+            (227, 8, 'CONCEPCIÓN'),
+            (228, 8, 'TALCAHUANO'),
+            (229, 8, 'PENCO'),
+            (230, 8, 'TOMÉ'),
+            (231, 8, 'FLORIDA'),
+            (232, 8, 'HUALQUI'),
+            (233, 8, 'SANTA JUANA'),
+            (234, 8, 'LOTA'),
+            (235, 8, 'CORONEL'),
+            (236, 8, 'LEBU'),
+            (237, 8, 'ARAUCO'),
+            (238, 8, 'CURANILAHUE'),
+            (239, 8, 'LOS ALAMOS'),
+            (240, 8, 'CAÑETE'),
+            (241, 8, 'CONTULMO'),
+            (242, 8, 'TIRÚA'),
+            (372, 8, 'CHIGUAYANTE'),
+            (380, 8, 'SAN PEDRO DE LA PAZ'),
+            (392, 8, 'HUALPÉN'),
+            (393, 8, 'ALTO BIOBÍO'),
+            (243, 9, 'ANGOL'),
+            (244, 9, 'RENAICO'),
+            (245, 9, 'COLLIPULLI'),
+            (246, 9, 'LONQUIMAY'),
+            (247, 9, 'CURACAUTÍN'),
+            (248, 9, 'ERCILLA'),
+            (249, 9, 'VICTORIA'),
+            (250, 9, 'TRAIGUÉN'),
+            (251, 9, 'LUMACO'),
+            (252, 9, 'PURÉN'),
+            (253, 9, 'LOS SAUCES'),
+            (254, 9, 'TEMUCO'),
+            (255, 9, 'LAUTARO'),
+            (256, 9, 'PERQUENCO'),
+            (257, 9, 'VILCÚN'),
+            (258, 9, 'CUNCO'),
+            (259, 9, 'MELIPEUCO'),
+            (260, 9, 'CURARREHUE'),
+            (261, 9, 'PUCÓN'),
+            (262, 9, 'VILLARRICA'),
+            (263, 9, 'FREIRE'),
+            (264, 9, 'PITRUFQUÉN'),
+            (265, 9, 'GORBEA'),
+            (266, 9, 'LONCOCHE'),
+            (267, 9, 'TOLTÉN'),
+            (268, 9, 'TEODORO SCHMIDT'),
+            (269, 9, 'SAAVEDRA'),
+            (270, 9, 'CARAHUE'),
+            (271, 9, 'NUEVA IMPERIAL'),
+            (272, 9, 'GALVARINO'),
+            (376, 9, 'PADRE LAS CASAS'),
+            (391, 9, 'CHOLCHOL'),
+            (285, 10, 'OSORNO'),
+            (286, 10, 'SAN PABLO'),
+            (288, 10, 'PUERTO OCTAY'),
+            (289, 10, 'PURRANQUE'),
+            (290, 10, 'RÍO NEGRO'),
+            (291, 10, 'SAN JUAN DE LA COSTA'),
+            (292, 10, 'PUERTO MONTT'),
+            (293, 10, 'PUERTO VARAS'),
+            (294, 10, 'COCHAMÓ'),
+            (295, 10, 'CALBUCO'),
+            (296, 10, 'MAULLÍN'),
+            (297, 10, 'LOS MUERMOS'),
+            (298, 10, 'FRESIA'),
+            (299, 10, 'LLANQUIHUE'),
+            (300, 10, 'FRUTILLAR'),
+            (301, 10, 'CASTRO'),
+            (302, 10, 'ANCUD'),
+            (303, 10, 'QUEMCHI'),
+            (304, 10, 'DALCAHUE'),
+            (305, 10, 'CURACO DE VÉLEZ'),
+            (306, 10, 'QUINCHAO'),
+            (307, 10, 'PUQUELDÓN'),
+            (308, 10, 'CHONCHI'),
+            (309, 10, 'QUEILÉN'),
+            (310, 10, 'QUELLÓN'),
+            (311, 10, 'CHAITÉN'),
+            (312, 10, 'HUALAIHUÉ'),
+            (313, 10, 'FUTALEUFÚ'),
+            (314, 10, 'PALENA'),
+            (373, 10, 'PUYEHUE'),
+            (315, 11, 'COYHAIQUE'),
+            (316, 11, 'LAGO VERDE'),
+            (317, 11, 'AISÉN'),
+            (318, 11, 'CISNES'),
+            (319, 11, 'GUAITECAS'),
+            (320, 11, 'CHILE CHICO'),
+            (321, 11, 'RÍO IBÁÑEZ'),
+            (322, 11, 'COCHRANE'),
+            (323, 11, 'O''''Higgins'),
+            (324, 11, 'TORTEL'),
+            (325, 12, 'NATALES'),
+            (326, 12, 'TORRES DEL PAINE'),
+            (327, 12, 'PUNTA ARENAS'),
+            (328, 12, 'RÍO VERDE'),
+            (329, 12, 'LAGUNA BLANCA'),
+            (330, 12, 'SAN GREGORIO'),
+            (331, 12, 'PORVENIR'),
+            (332, 12, 'PRIMAVERA'),
+            (333, 12, 'TIMAUKEL'),
+            (335, 12, 'ANTÁRTICA'),
+            (389, 12, 'CABO DE HORNOS'),
+            (81, 13, 'SANTIAGO'),
+            (82, 13, 'INDEPENDENCIA'),
+            (83, 13, 'CONCHALÍ'),
+            (84, 13, 'HUECHURABA'),
+            (85, 13, 'RECOLETA'),
+            (86, 13, 'PROVIDENCIA'),
+            (87, 13, 'VITACURA'),
+            (88, 13, 'LO BARNECHEA'),
+            (89, 13, 'LAS CONDES'),
+            (90, 13, 'ÑUÑOA'),
+            (91, 13, 'LA REINA'),
+            (92, 13, 'MACUL'),
+            (93, 13, 'PEÑALOLÉN'),
+            (94, 13, 'LA FLORIDA'),
+            (95, 13, 'SAN JOAQUÍN'),
+            (96, 13, 'LA GRANJA'),
+            (97, 13, 'LA PINTANA'),
+            (98, 13, 'SAN RAMÓN'),
+            (99, 13, 'SAN MIGUEL'),
+            (100, 13, 'LA CISTERNA'),
+            (101, 13, 'EL BOSQUE'),
+            (102, 13, 'PEDRO AGUIRRE CERDA'),
+            (103, 13, 'LO ESPEJO'),
+            (104, 13, 'ESTACIÓN CENTRAL'),
+            (105, 13, 'CERRILLOS'),
+            (106, 13, 'MAIPÚ'),
+            (107, 13, 'QUINTA NORMAL'),
+            (108, 13, 'LO PRADO'),
+            (109, 13, 'PUDAHUEL'),
+            (110, 13, 'CERRO NAVIA'),
+            (111, 13, 'RENCA'),
+            (112, 13, 'QUILICURA'),
+            (113, 13, 'COLINA'),
+            (114, 13, 'LAMPA'),
+            (115, 13, 'TILTIL'),
+            (116, 13, 'PUENTE ALTO'),
+            (117, 13, 'SAN JOSÉ DE MAIPO'),
+            (118, 13, 'PIRQUE'),
+            (119, 13, 'SAN BERNARDO'),
+            (120, 13, 'BUIN'),
+            (121, 13, 'PAINE'),
+            (122, 13, 'CALERA DE TANGO'),
+            (123, 13, 'MELIPILLA'),
+            (124, 13, 'MARÍA PINTO'),
+            (125, 13, 'CURACAVÍ'),
+            (126, 13, 'ALHUÉ'),
+            (127, 13, 'SAN PEDRO'),
+            (128, 13, 'TALAGANTE'),
+            (129, 13, 'PEÑAFLOR'),
+            (130, 13, 'ISLA DE MAIPO'),
+            (131, 13, 'EL MONTE'),
+            (381, 13, 'PADRE HURTADO'),
+            (273, 14, 'VALDIVIA'),
+            (274, 14, 'MARIQUINA'),
+            (275, 14, 'LANCO'),
+            (276, 14, 'LOS LAGOS'),
+            (277, 14, 'FUTRONO'),
+            (278, 14, 'CORRAL'),
+            (279, 14, 'MÁFIL'),
+            (280, 14, 'PANGUIPULLI'),
+            (281, 14, 'LA UNIÓN'),
+            (282, 14, 'PAILLACO'),
+            (283, 14, 'RÍO BUENO'),
+            (284, 14, 'LAGO RANCO'),
+            (1, 15, 'ARICA'),
+            (2, 15, 'CAMARONES'),
+            (3, 15, 'PUTRE'),
+            (4, 15, 'GENERAL LAGOS'),
+            (194, 16, 'CHILLÁN'),
+            (195, 16, 'SAN CARLOS'),
+            (196, 16, 'ÑIQUÉN'),
+            (197, 16, 'SAN FABIÁN'),
+            (198, 16, 'COIHUECO'),
+            (199, 16, 'PINTO'),
+            (200, 16, 'SAN IGNACIO'),
+            (201, 16, 'EL CARMEN'),
+            (202, 16, 'YUNGAY'),
+            (203, 16, 'PEMUCO'),
+            (204, 16, 'BULNES'),
+            (205, 16, 'QUILLÓN'),
+            (206, 16, 'RÁNQUIL'),
+            (207, 16, 'PORTEZUELO'),
+            (208, 16, 'COELEMU'),
+            (209, 16, 'TREGUACO'),
+            (210, 16, 'COBQUECURA'),
+            (211, 16, 'QUIRIHUE'),
+            (212, 16, 'NINHUE'),
+            (213, 16, 'SAN NICOLÁS'),
+            (379, 16, 'CHILLÁN VIEJO');
+        """))
+        session.commit()
+
 
 # pylint: disable=R0913
 def crear_multipropietario(
@@ -480,10 +864,15 @@ def actualizar_vigencia_multipropietarios(multipropietarios):
         session.add(multipropietario)
         session.commit()
 
-
-def clasificar_propietarios(multipropietarios,
-                            adquirentes,
-                            enajenantes, ruts_enajenantes, formulario, formulario_anterior):
+def clasificar_propietarios(
+        multipropietarios,
+        propietarios,
+        propietarios_enajenantes,
+        propietarios_no_enajenantes,
+        enajenantes,
+        ruts_enajenantes,
+        enajenantes_fantasma,
+        enajenantes_no_fantasma):
     """
     Función que categoriza a los multipropietarios y enajenantes en
     grupos específicos basados en sus RUT y año de vigencia inicial.
@@ -704,8 +1093,9 @@ def calcular_dominio_enajenantes(enajenantes):
 
 def crear_tablas():
     Base.metadata.create_all(session.bind)
+    rellenar_tabla_region()
+    rellenar_tabla_comuna()
     session.close()
-
 
 app = Flask(__name__)
 app.secret_key = LLAVE
@@ -874,9 +1264,11 @@ def subir_archivo():
     """
     if 'JSONfile' not in request.files:
         flash("No se envió ningún archivo", 'danger')
-        return 'No se envió ningún archivo.'
+        return render_template("upload_formulario.html")  # Asegúrate de usar la plantilla correcta
+    
     file = request.files['JSONfile']
     file_content = file.read()
+
     try:
         json_dict = loads(file_content)
         terrenos = []
@@ -887,13 +1279,21 @@ def subir_archivo():
                 terreno = procesar_formulario(num_atencion, form)
                 if terreno and terreno not in terrenos:
                     terrenos.append(terreno)
+
         for terreno in terrenos:
             limpiar_multipropietarios(terreno[0], terreno[1], terreno[2])
             ordenar_multipropietarios(terreno[0], terreno[1], terreno[2])
+        
         flash("Archivo cargado con éxito", 'success')
     except JSONDecodeError as e:
+        # Captura errores de JSON
         print(f"Error al decodificar JSON: {e}")
-    return render_template(f'{HOME_PAGE}')
+        flash(f"Error al procesar el archivo: Formato JSON no válido", 'danger')
+    except Exception as e:
+        # Captura cualquier otro error
+        print(f"Error inesperado: {e}")
+        return None 
+    return render_template("upload_formulario.html")
 
 
 @app.route('/filtrar_multipropietarios')

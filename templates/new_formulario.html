@@ -4,106 +4,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Formulario</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            background-color: white;
-            color: black;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .form-wrapper {
+            display: flex;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 50px auto;
         }
         .form-container {
-            width: 100%;
-            padding: 10px;
+            width: 65%;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            background-color: #fff;
         }
-        h1 {
-            text-align: left;
-            color: black;
+        .progress-sidebar {
+            width: 30%;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .progress-sidebar h4 {
+            text-align: center;
+        }
+        .form-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
         }
         .form-group {
-            margin-bottom: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
         }
-        input, select, button {
-            display: block;
-            width: 100%;
-            margin: 5px 0;
-            padding: 5px;
+        .form-group label::after {
+            content: " *";
+            color: red;
         }
-        button {
-            background-color: gray;
-            color: white;
+        .form-control.completed {
+            border: 2px solid #28a745; /* Verde para campos completados */
+        }
+        .form-control.invalid {
+            border: 2px solid #dc3545; /* Rojo para campos inválidos */
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+        }
+        .btn-add {
+            background-color: #28a745;
+            color: #fff;
             border: none;
+            transition: background-color 0.3s;
         }
-        button:hover {
-            background-color: darkgray;
+        .btn-add:hover {
+            background-color: #218838;
+        }
+        .btn-remove {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s;
+            float: right;
+            margin-top: 10px;
+        }
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+        .form-group-with-btn {
+            overflow: hidden;
+        }
+        .form-group-with-btn input {
+            margin-top: 10px;
+        }
+        .btn-file {
+            background-color: aquamarine;
+        }
+        .btn-file:hover {
+            background-color: rgb(69, 143, 118);
+        }
+        /* Barra de progreso */
+        .progress-container {
+            height: 100px; /* Aumentamos la altura de la barra */
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            position: relative;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #28a745;
+            border-radius: 5px;
+            transition: width 0.6s ease; /* Transición suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .progress-bar img {
+            height: 30px; /* Aumentamos el tamaño del icono */
+        }
+        .progress-text {
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            position: absolute;
+        }
+        /* Botón Enviar */
+        .btn-submit {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        .btn-submit:disabled {
+            background-color: #c3e6cb;
+            color: #fff;
+        }
+        .btn-submit:hover:enabled {
+            background-color: #218838;
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>Crear Formulario</h1>
-        <form method="POST" action="/enviar_formulario">
-            <fieldset disabled>
+    {% include '_navbar.html' %}
+
+    <div class="container form-wrapper">
+        <!-- Formulario -->
+        <div class="form-container">
+            <h1>Crear Formulario</h1>
+            <form method="POST" action="/enviar_formulario" id="formulario">
+                <fieldset disabled>
+                    <div class="form-group">
+                      <label for="disabledTextInput">Número de Atención</label>
+                      <input type="text" id="num_atencion" class="form-control" placeholder="{{ num_atencion }}" >
+                    </div>
+                </fieldset>
+                <input type="hidden" name="num_atencion" value="{{ num_atencion }}">
+
                 <div class="form-group">
-                    <label for="num_atencion">Número de Atención</label>
-                    <input type="text" id="num_atencion" placeholder="{{ num_atencion }}">
+                    <label for="cne" data-toggle="tooltip" title="Selecciona el tipo de CNE">
+                        CNE
+                    </label>
+                    <select class="custom-select" id="cne" name="cne" required>
+                        <option selected disabled></option>
+                        <option value="8">Compraventa</option>
+                        <option value="99">Regularización de Patrimonio</option>
+                    </select>
                 </div>
-            </fieldset>
-            <input type="hidden" name="num_atencion" value="{{ num_atencion }}">
-            <div class="form-group">
-                <label for="cne">CNE</label>
-                <select id="cne" name="cne">
-                    <option selected disabled></option>
-                    <option value="8">Compraventa</option>
-                    <option value="99">Regularización de Patrimonio</option>
-                </select>
+                
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="region" data-toggle="tooltip" title="Selecciona tu región">Región</label>
+                        <select class="custom-select" id="region" name="region" required>
+                            <option selected disabled></option>
+                            {% for region in regiones %}
+                                <option value="{{ region.id }}">{{ region.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col">
+                        <label for="comuna" data-toggle="tooltip" title="Selecciona tu comuna">Comuna</label>
+                        <select class="custom-select" id="comuna" name="comuna" required disabled>
+                            <option selected disabled></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col">
+                        <label for="manzana" data-toggle="tooltip" title="Introduce el número de la manzana">Manzana</label>
+                        <input type="number" class="form-control" id="manzana" name="manzana" required>
+                    </div>
+                    <div class="col">
+                        <label for="predio" data-toggle="tooltip" title="Introduce el número del predio">Predio</label>
+                        <input type="number" class="form-control" id="predio" name="predio" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" style= "margin-bottom: 10px" class="btn btn-add" id="add_enajenante">+ Agregar Enajenante</button>
+                    <div id="enajenantes"></div>
+                </div>
+                <div class="form-group">
+                    <button type="button" style= "margin-bottom: 10px" class="btn btn-add" id="add_adquirente">+ Agregar Adquirente</button>
+                    <div id="adquirentes"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="fojas" data-toggle="tooltip" title="Introduce el número de fojas">Fojas</label>
+                    <input type="number" class="form-control" id="fojas" name="fojas" required>
+                </div>
+                <div class="form-group">
+                    <label for="fecha_ins" data-toggle="tooltip" title="Introduce la fecha de inscripción">Fecha de inscripción</label>
+                    <input type="datetime-local" class="form-control" id="fecha_ins" name="fecha_ins" required>
+                </div>
+                <div class="form-group">
+                    <label for="num_ins" data-toggle="tooltip" title="Introduce el número de inscripción">Número de inscripción</label>
+                    <input type="number" class="form-control" id="num_ins" name="num_ins" required>
+                </div>
+            </form>
+        </div> 
+
+        <!-- Barra de progreso en el cuadro a la derecha -->
+        <div class="progress-sidebar">
+            <h4>Progreso</h4>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Construction_cone_icon.png" alt="Construcción">
+                </div>
+                <div class="progress-text" id="progress-text">0% Completado</div>
             </div>
-            <div class="form-group">
-                <label for="region">Región</label>
-                <select id="region" name="region">
-                    <option selected disabled></option>
-                    {% for region in regiones %}
-                        <option value="{{ region.id }}">{{ region.nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="comuna">Comuna</label>
-                <select id="comuna" name="comuna" disabled>
-                    <option selected disabled></option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="manzana">Manzana</label>
-                <input type="number" id="manzana" name="manzana">
-            </div>
-            <div class="form-group">
-                <label for="predio">Predio</label>
-                <input type="number" id="predio" name="predio">
-            </div>
-            <div class="form-group">
-                <button type="button" id="add_enajenante">+ Agregar Enajenante</button>
-                <div id="enajenantes"></div>
-            </div>
-            <div class="form-group">
-                <button type="button" id="add_adquirente">+ Agregar Adquirente</button>
-                <div id="adquirentes"></div>
-            </div>
-            <div class="form-group">
-                <label for="fojas">Fojas</label>
-                <input type="number" id="fojas" name="fojas">
-            </div>
-            <div class="form-group">
-                <label for="fecha_ins">Fecha de inscripción</label>
-                <input type="datetime-local" id="fecha_ins" name="fecha_ins">
-            </div>
-            <div class="form-group">
-                <label for="num_ins">Número de inscripción</label>
-                <input type="number" id="num_ins" name="num_ins">
-            </div>
-            <button type="submit" id="submit-form">Enviar</button>
-        </form>
-    </div>
+        <br>
+        <!-- Botón Enviar -->
+        <button type="submit" id="submit-form" class="btn btn-submit btn-block" disabled>Enviar</button>
+        </div>
+    </div> 
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {            
@@ -130,43 +256,92 @@
                 }
             });
 
+            function formatRut(rut) {
+                var cleanRut = rut.replace(/[^\dkK]/g, '');
+                var formattedRut = cleanRut.replace(/^(\d{1,2})(\d{3})(\d{3})([\dkK]{1})$/, '$1.$2.$3-$4');
+                return formattedRut;
+            }
+
             function agregarCampo(tipo) {
                 var container = tipo === 'enajenante' ? document.getElementById('enajenantes') : document.getElementById('adquirentes');
                 var label = tipo === 'enajenante' ? 'Enajenante' : 'Adquirente';
     
                 var newDiv = document.createElement('div');
+                newDiv.classList.add('form-group-with-btn');
     
                 var labelElement = document.createElement('label');
                 labelElement.textContent = label;
     
                 var rutInput = document.createElement('input');
                 rutInput.setAttribute('type', 'text');
+                rutInput.setAttribute('class', 'form-control');
                 rutInput.setAttribute('name', tipo + '_rut[]');
                 rutInput.setAttribute('placeholder', 'RUT');
+                rutInput.setAttribute('maxlength', '12');
     
                 var porcentajeInput = document.createElement('input');
                 porcentajeInput.setAttribute('type', 'text');
-                porcentajeInput.setAttribute('name', tipo + '_porcentaje[]');
-                porcentajeInput.setAttribute('placeholder', '% de derecho');   
-    
+                porcentajeInput.setAttribute('class', 'form-control'); 
+                porcentajeInput.setAttribute('name', tipo + '_porcentaje[]'); 
+                porcentajeInput.setAttribute('placeholder', '% de derecho');
+                
                 var removeButton = document.createElement('button');
                 removeButton.textContent = 'Eliminar';
+                removeButton.classList.add('btn', 'btn-remove');
                 removeButton.onclick = function() {
                     container.removeChild(newDiv);
                 };
-    
+
+                rutInput.addEventListener('input', function(event) {
+                    var rut = event.target.value.trim();
+                    var formattedRut = formatRut(rut);
+                    event.target.value = formattedRut;
+                });
+
                 newDiv.appendChild(labelElement);
                 newDiv.appendChild(rutInput);
                 newDiv.appendChild(porcentajeInput);
                 newDiv.appendChild(removeButton);
-    
+
                 container.appendChild(newDiv);
             }
-            
+
+            // Función para cambiar el color de la barra de progreso
+            function getColor(percentage) {
+                var r = Math.floor(255 - (255 * percentage / 100));
+                var g = Math.floor(255 * percentage / 100);
+                return `rgb(${r}, ${g}, 0)`; // Color RGB que varía de rojo a verde
+            }
+
+            // Actualizar la barra de progreso
+            const formulario = document.getElementById('formulario');
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const submitButton = document.getElementById('submit-form');
+
+            formulario.addEventListener('input', function() {
+                const totalFields = formulario.querySelectorAll('input, select').length;
+                const filledFields = Array.from(formulario.querySelectorAll('input, select')).filter(field => field.value).length;
+                const progress = Math.round((filledFields / (totalFields-1)) * 100);
+                
+                // Aplicar color y estilo dinámicamente
+                progressBar.style.width = progress + '%';
+                progressBar.style.backgroundColor = getColor(progress);
+                progressText.textContent = progress + '% Completado';
+
+                if (progress === 100) {
+                    progressBar.innerHTML = '<img src="https://i.pinimg.com/originals/f1/be/c8/f1bec81e20d80cd36c82379af920a4e9.gif" alt="Construcción" style="width: 100px; height: 100px;">';
+                    submitButton.disabled = false;
+                } else {
+                    progressBar.innerHTML = '<img src="https://i.pinimg.com/originals/9a/d5/d5/9ad5d5d9288ec5f54e5678377dbdd38e.gif" alt="Construcción" style="width: 100px; height: 100px;">';
+                    submitButton.disabled = true;
+                }
+            });
+
             document.getElementById('add_enajenante').addEventListener('click', function() {
                 agregarCampo('enajenante');
             });
-    
+
             document.getElementById('add_adquirente').addEventListener('click', function() {
                 agregarCampo('adquirente');
             });

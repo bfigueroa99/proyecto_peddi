@@ -3,104 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <title>Carga Masiva de Formularios</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
         }
-        .container {
-            padding: 10px;
-            background-color: lightgray;
-            width: 100%;
-            height: 100vh;
+        
+        .main-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
         }
-        #drop-area {
-            width: 100%;
-            height: 150px;
-            border: 2px dashed black;
+
+        h1 {
             text-align: center;
-            padding: 20px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Barra de progreso */
+        .progress-container {
+            height: 30px;
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #dc3545;
+            border-radius: 5px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .progress-text {
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            position: absolute;
+        }
+
+        /* Alerta de error */
+        .alert-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .alert-container .alert {
+            display: flex;
+            align-items: center;
+        }
+        .alert-container .alert .alert-icon {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        /* Estilo de carga */
+        #drop-area {
+            height: 120px;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 120px;
+            font-size: 18px;
+            color: #888;
             cursor: pointer;
+            background-color: #fafcfb;
+            margin-bottom: 20px;
+        }
+
+        #drop-area.active {
+            border-color: #333;
+            color: #333;
+        }
+
+        .btn-file {
+            background-color: aquamarine;
+            display: inline-block;
             margin-bottom: 10px;
         }
-        #file-info {
+
+        .btn-file:hover {
+            background-color: rgb(69, 143, 118);
+        }
+
+        .file-info {
+            margin-left: 20px;
+            background-color: #f1f3f4;
+            padding: 20px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
             display: none;
-            background-color: #eee;
-            padding: 10px;
-            border: 1px solid black;
-            margin-top: 10px;
         }
-        button {
+
+        .file-info p {
+            color: #333;
+        }
+
+        .btn-submit {
+            background-color: #9ae49d;
             width: 100%;
+            margin-top: 30px;
             padding: 10px;
-            background-color: gray;
-            color: white;
-            border: none;
-            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
         }
-        button:hover {
-            background-color: darkgray;
+
+        .btn-submit:hover {
+            background-color: #517e52;
+            color: white;
+        }
+
+        .file-upload-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Estilos de carga */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+        }
+        .loading-text {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .loading-dots {
+            display: inline-block;
+            font-size: 24px;
+        }
+        .loading-dots span {
+            display: inline-block;
+            animation: bounce 1s infinite;
+        }
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="drop-area">
-            <p>Arrastra y suelta un archivo JSON aquí</p>
-            <input id="file-upload" type="file" accept="application/JSON" name="JSONfile" style="display:none;">
+    {% include '_navbar.html' %}
+
+    <div class="main-container">
+        <!-- Título -->
+        <h1>Carga de Archivo</h1>
+
+        <!-- Barra de progreso -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar">
+                0%
+            </div>
         </div>
-        <div id="file-info">
-            <p id="file-name"></p>
-            <p id="file-type"></p>
-            <p id="file-size"></p>
+
+        <!-- Alerta en caso de error -->
+        <div id="alertContainer" class="alert-container">
+            <!-- Aquí se mostrará la alerta en caso de error -->
         </div>
-        <button id="btn-submit">Subir Archivo</button>
+
+        <!-- Sección de carga del archivo -->
+        <div class="file-upload-container">
+            <!-- Zona de carga y arrastre -->
+            <div>
+                <form id="fileInput" method="POST" action="/cargar_archivo" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="file-upload" class="btn btn-file">
+                            <i class="bi bi-plus" style="margin-right: 10px;"></i>Cargar Archivo
+                        </label>
+                        <input id="file-upload" type="file" accept="application/JSON" name="JSONfile" style="display: none;">
+                    </div>
+                </form>
+                <div id="drop-area" class="drop-area" 
+                    ondragover="event.preventDefault()" 
+                    ondrop="handleDrop(event)" 
+                    ondragenter="this.classList.add('active')" 
+                    ondragleave="this.classList.remove('active')">
+                    <i style="color:darkgray;" class="bi bi-file-earmark-arrow-up-fill"></i>
+                    <p>Arrastra y suelta archivos JSON aquí</p>
+                </div>
+            </div>
+
+            <!-- Detalles del archivo -->
+            <div id="file-info" class="file-info">
+                <p><strong>Nombre del archivo:</strong> <span id="file-name"></span></p>
+                <p><strong>Tipo de archivo:</strong> <span id="file-type"></span></p>
+                <p><strong>Tamaño del archivo:</strong> <span id="file-size"></span></p>
+            </div>
+        </div>
+
+        <!-- Botón de envío -->
+        <button id="btn-submit" class="btn btn-submit">Subir Datos</button>
     </div>
+
+    <!-- Contenedor de Carga -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>
+            <span class="loading-text">Cargando</span>
+            <div class="loading-dots">
+                <span>.</span>
+                <span>.</span>
+                <span>.</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        const dropArea = document.getElementById('drop-area');
-        const fileUpload = document.getElementById('file-upload');
         const fileInfo = document.getElementById('file-info');
         const fileName = document.getElementById('file-name');
         const fileType = document.getElementById('file-type');
         const fileSize = document.getElementById('file-size');
+        const fileInput = document.getElementById('file-upload');
+        const dropArea = document.getElementById('drop-area');
         const submitButton = document.getElementById('btn-submit');
-        let selectedFile = null;
+        const progressBar = document.getElementById('progress-bar');
+        const alertContainer = document.getElementById('alertContainer');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        let selectedFiles;
 
-        dropArea.addEventListener('click', () => {
-            fileUpload.click();
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            handleFileSelect(file);
         });
-
-        fileUpload.addEventListener('change', (event) => {
-            handleFileSelect(event.target.files[0]);
-        });
-
-        dropArea.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            dropArea.style.borderColor = 'black';
-        });
-
-        dropArea.addEventListener('drop', (event) => {
-            event.preventDefault();
-            handleFileSelect(event.dataTransfer.files[0]);
-        });
-
-        function handleFileSelect(file) {
-            selectedFile = file;
-            fileInfo.style.display = 'block';
-            fileName.textContent = "Nombre: " + file.name;
-            fileType.textContent = "Tipo: " + file.type;
-            fileSize.textContent = "Tamaño: " + file.size + " bytes";
-        }
 
         submitButton.addEventListener('click', () => {
-            if (!selectedFile) {
-                alert("Por favor, seleccione un archivo.");
-                return;
+            if (selectedFiles) {
+                // Mostrar animación de carga
+                loadingOverlay.style.display = 'flex';
+
+                // Simular retraso de 2 segundos antes de la subida real
+                setTimeout(() => {
+                    uploadFile(selectedFiles);
+                }, 2000);
+            } else {
+                displayError('No hay archivos seleccionados para enviar.');
             }
-            alert("Subiendo archivo: " + selectedFile.name);
         });
-    </script>
+
+        async function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('JSONfile', file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/cargar_archivo', true);
+
+            xhr.upload.onprogress = function(event) {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    updateProgressBar(percentComplete);
+                }
+            };
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    window.location.href = '/';
+                } else {
+                    displayError('Error en la carga del archivo.');
+                    resetProgressBar();
+                    loadingOverlay.style.display = 'none';
+                }
+            };
+
+            xhr.onerror = function() {
+                displayError('Error de red.');
+                resetProgressBar();
+                loadingOverlay.style.display = 'none';
+            };
+
+            xhr.send(formData);
+        }
+
+        function updateProgressBar(percent) {
+            progressBar.style.width = percent + '%';
+            progressBar.textContent = percent + '%';
+            // Cambiar color de rojo a verde progresivamente
+            const r = Math.floor(255 - (255 * percent / 100));
+            const g = Math.floor(255 * percent / 100);
+            progressBar.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
+        }
+
+        function resetProgressBar() {
+            let currentPercent = 100;
+            const interval = setInterval(() => {
+                if (currentPercent > 0) {
+                    currentPercent -= 2;  // Disminuye el ancho de la barra lentamente
+                    progressBar.style.width = currentPercent + '%';
+                    progressBar.textContent = currentPercent + '%';
+                    const r = Math.floor(255 - (255 * currentPercent / 100));
+                    const g = Math.floor(255 * currentPercent / 100);
+                    progressBar.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
+                } else {
+                    clearInterval(interval);
+                    progressBar.textContent = '0%';
+                }
+            }, 50);  // Intervalo de actualización de la barra
+        }
+
+        function handleFileSelect(file) {
+            fileInfo.style.display = 'block';
+            fileName.textContent = file.name;
+            fileType.textContent = file.type;
+            fileSize.textContent = file.size + ' bytes';
+            selectedFiles = file;
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            handleFileSelect(file);
+        }
+
+        function displayError(message) {
+            const alertHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <span class="alert-icon">❌</span>
+                    ${message}
+                </div>
+            `;
+            alertContainer.innerHTML = alertHTML;
+            alertContainer.style.display = 'block';
+        }
+    </script> 
 </body>
 </html>

@@ -1,0 +1,63 @@
+<style>
+.create-forms {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff; /* El color del texto se mantiene blanco */
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    text-align: center;
+    text-decoration: none; /* Sin subrayado */
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.create-forms:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    color: #fff; /* El color del texto sigue siendo blanco */
+    text-decoration: none; /* Sin subrayado al hacer hover */
+}
+
+.create-forms:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
+    color: #fff; /* El color del texto sigue siendo blanco al hacer focus */
+    text-decoration: none; /* Sin subrayado al hacer focus */
+}
+
+.create-forms:active {
+    background-color: #1e7e34; /* Color de fondo al hacer clic */
+    border-color: #1c7430;
+    color: #fff; /* El color del texto sigue siendo blanco al hacer clic */
+    text-decoration: none; /* Sin subrayado al hacer clic */
+}
+</style>
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="/">EnajenApp</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                  <a class="nav-link" href="/formularios">Ver Formularios</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/filtrar_multipropietarios">Filtrar Propietarios</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="/cargar_archivo">Carga de Archivo</a>
+              </li>
+            </ul>
+            <a class="create-forms my-2 my-sm-0" href="/nuevo_formulario">Crear un Formulario</a>
+        </div>
+    </nav>
+</header>
+<br><br>
